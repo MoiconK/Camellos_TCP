@@ -144,7 +144,7 @@ Camellos_TCP
 
 ---
 
-## 5. Notas para los alumnos
+## 5. Notas
 
 - **Modularidad:** Observa cómo se organiza el proyecto en paquetes y clases, cada uno con responsabilidades claras.
 - **Hilos:** Analiza cómo se gestionan los hilos tanto en el cliente como en el servidor.
@@ -153,5 +153,5 @@ Camellos_TCP
 
 ---
 
-¡Diviértete explorando y entendiendo este proyecto de cliente-servidor! 😊
+¡Diviértete explorando y entendiendo este proyecto de cliente-servidor!
 
