@@ -97,12 +97,12 @@ public class GestionClientes extends Thread {
             System.out.println("Cliente " + idCamello + ": enviando posiciones finales");
             int[] posiciones = servidor.getPosicionesFinales();
 
+            // El código -1 indica el fin de la carrera
+            out.writeInt(-1);
             // Enviar las posiciones finales
             for (int i = 0; i < 4; i++) {
                 out.writeInt(posiciones[i]);
             }
-            // El código -1 indica el fin de la carrera
-            out.writeInt(-1);
             out.flush();
             System.out.println("Cliente " + idCamello + ": posiciones finales enviadas");
 

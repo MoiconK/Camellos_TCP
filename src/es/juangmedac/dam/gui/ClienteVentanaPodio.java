@@ -2,10 +2,9 @@ package es.juangmedac.dam.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-/**
- * Ventana que muestra el podio final de la carrera.
- */
 public class ClienteVentanaPodio extends JFrame {
 
     /**
@@ -15,9 +14,7 @@ public class ClienteVentanaPodio extends JFrame {
      */
     public ClienteVentanaPodio(int[] posiciones, String[] nombres) {
         super("Podio - Carrera de Camellos");
-
-        // Al cerrar esta ventana, no se cierra toda la aplicación
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Permite que el evento windowClosed se active
         setResizable(true);
         setLayout(new GridLayout(4, 1, 5, 5));
 
