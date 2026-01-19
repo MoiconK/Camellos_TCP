@@ -144,14 +144,39 @@ Camellos_TCP
 
 ---
 
-## 5. Notas
+## 5. Preguntas
 
-- **Modularidad:** Observa cómo se organiza el proyecto en paquetes y clases, cada uno con responsabilidades claras.
-- **Hilos:** Analiza cómo se gestionan los hilos tanto en el cliente como en el servidor.
-- **Interfaces gráficas:** Aprende cómo se integran las interfaces gráficas con la lógica del cliente.
-- **Protocolo TCP:** Comprende cómo se utiliza este protocolo para la comunicación cliente-servidor.
+1. **¿Qué IP has tenido que poner en el código del Cliente? ¿Es una IP pública o privada?**
+
+-Hemos usado la IP: 10.192.117.164. 
+-Esta es una IP pública dentro de una red Privada, la cual es la del wifi del instituto.
+
+
+2. **Si el Árbitro cierra su portátil a mitad de carrera, ¿qué excepción salta en tu pantalla?**
+
+-El error que aparece es una SocketException la cual te dice que la conexión ha sido reseteada, es decir que se ha cerrado al servidor.
+
+
+
+3. **¿Por qué es necesario que todos estéis conectados a la misma red (mismo Router/Switch) para que esto funcione con IPs tipo 192.168.x.x?**
+
+-Porque el servidor está dentro de una red privada y esto requiere que todos estén conectados a esta. Además es necesario estar conectado al router o switch ya que estos realizan la función de puente entre todos los dispositivos y el servidor.
 
 ---
 
-¡Diviértete explorando y entendiendo este proyecto de cliente-servidor!
+## 6. Capturas
+
+-Imagen de la carrera:
+
+<img width="512" height="349" alt="image" src="https://github.com/user-attachments/assets/3c1c3138-c5ff-408b-9415-daa3d31b231d" />
+
+
+-Imagen de cuando te sale una puntución de cuando tiras el dado:
+
+<img width="260" height="110" alt="image" src="https://github.com/user-attachments/assets/cff12204-4153-487c-b7ad-ebb9bae76b60" />
+
+---
+
+
+
 
