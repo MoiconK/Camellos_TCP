@@ -48,6 +48,7 @@ public class Servidor {
         avances = new int[NUM_MAX_JINETES];
 
         socketsClientes = new ArrayList<>();
+        DataOutputStream[] outputs = new DataOutputStream[NUM_MAX_JINETES]; // Para enviar a todos
 
         System.out.println("Servidor iniciado en puerto 5555... Esperando " + NUM_MAX_JINETES + " clientes.");
 
@@ -73,8 +74,9 @@ public class Servidor {
                 out.writeUTF("aceptado");
                 out.flush();
 
-                // Se guarda el socket del cliente
+                // Se guarda el socket del cliente y su output stream
                 socketsClientes.add(socketCliente);
+                outputs[socketsClientes.size() - 1] = out;
             }
 
             // Se lanzan los hilos de gestión para cada cliente
@@ -84,17 +86,15 @@ public class Servidor {
                 hilo.start();
             }
 
-            // Espera a que la carrera finalice (cuando todos los camellos hayan terminado)
-            while (!finCarrera) {
-                synchronized (this) {
+            // Espera a que la carrera finalice
+            synchronized (this) {
+                while (!finCarrera) {
                     wait();
                 }
             }
 
-            // Una vez finalizada la carrera, se notifica a todos para que puedan finalizar
-            synchronized (this) {
-                notifyAll();
-            }
+            // Pequeña pausa para asegurar que todos los hilos han terminado
+            Thread.sleep(2000);
 
             System.out.println("Carrera finalizada. Cerrando servidor.");
 
@@ -129,8 +129,7 @@ public class Servidor {
 
         // Si todos han finalizado, se marca el fin de la carrera
         if (numJinetesAcabados == NUM_MAX_JINETES) {
-            finCarrera = true;
-            notifyAll();
+            notificarFinCarrera(); // Usar el nuevo método
         }
     }
 
@@ -186,5 +185,17 @@ public class Servidor {
         } while (avances[turnoActual] >= 100 && !finCarrera);
         // Se notifica a todos los hilos que el turno ha cambiado.
         notifyAll();
+    }
+    // Notifica a todos los clientes que la carrera ha finalizado
+    public synchronized void notificarFinCarrera() {
+        finCarrera = true;
+        notifyAll(); // Despierta a todos los hilos que estén esperando
+
+        // Pequeña pausa para asegurar que todos los hilos reciben la notificación
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

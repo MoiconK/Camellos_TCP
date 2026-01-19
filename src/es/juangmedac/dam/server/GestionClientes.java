@@ -76,8 +76,17 @@ public class GestionClientes extends Thread {
                 Thread.sleep(500);
             }
 
-            // 3) Una vez finalizada la carrera, se envían las posiciones finales
+            // 3) Esperar a que el servidor confirme que todos han terminado
+            synchronized (servidor) {
+                while (!servidor.isFinCarrera()) {
+                    servidor.wait();
+                }
+            }
+
+            // 4) Una vez finalizada la carrera, se envían las posiciones finales
             int[] posiciones = servidor.getPosicionesFinales(idCamello);
+
+            // Enviar las posiciones finales
             for (int i = 0; i < 4; i++) {
                 out.writeInt(posiciones[i]);
             }
@@ -87,8 +96,20 @@ public class GestionClientes extends Thread {
 
             System.out.println("Jinete " + idCamello + " ha enviado las posiciones finales.");
 
+            // Pequeña pausa para asegurar que el cliente recibe todos los datos
+            Thread.sleep(1000);
+
         } catch (Exception e) {
             Logger.getLogger(GestionClientes.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            // Cerrar el socket solo después de enviar todos los datos
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close();
+                }
+            } catch (Exception e) {
+                Logger.getLogger(GestionClientes.class.getName()).log(Level.SEVERE, null, e);
+            }
         }
     }
 }

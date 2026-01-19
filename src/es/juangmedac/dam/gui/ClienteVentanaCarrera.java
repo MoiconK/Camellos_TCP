@@ -165,6 +165,21 @@ public class ClienteVentanaCarrera extends JFrame {
         }
     }
 
+    public void mostrarPodio(int[] posiciones, String[] nombres) {
+        SwingUtilities.invokeLater(() -> {
+            // Mostrar mensaje de que la carrera ha terminado
+            JOptionPane.showMessageDialog(this,
+                    "¡La carrera ha terminado!",
+                    "Fin de la carrera",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            // Crear y mostrar la ventana del podio
+            ClienteVentanaPodio podio = new ClienteVentanaPodio(posiciones, nombres);
+            podio.setLocationRelativeTo(this);
+            podio.setVisible(true);
+        });
+    }
+
     /**
      * Método main para probar la ventana de la carrera de forma independiente.
      */
