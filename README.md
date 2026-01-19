@@ -154,8 +154,9 @@ Camellos_TCP
 
 2. **Si el Árbitro cierra su portátil a mitad de carrera, ¿qué excepción salta en tu pantalla?**
 
--El error que aparece es una SocketException la cual te dice que la conexión ha sido reseteada, es decir que se ha cerrado al servidor.
+-El error que aparece es una SocketException la cual te dice que la conexión al host, no responde y no se puede seguis jugando.
 
+<img width="882" height="294" alt="{F860911B-3106-4AAD-B210-49FD3E6F5261}" src="https://github.com/user-attachments/assets/b65e047a-ba94-42ba-ab1e-184a11319a79" />
 
 
 3. **¿Por qué es necesario que todos estéis conectados a la misma red (mismo Router/Switch) para que esto funcione con IPs tipo 192.168.x.x?**
@@ -174,6 +175,14 @@ Camellos_TCP
 -Imagen de cuando te sale una puntución de cuando tiras el dado:
 
 <img width="260" height="110" alt="image" src="https://github.com/user-attachments/assets/cff12204-4153-487c-b7ad-ebb9bae76b60" />
+
+-Imagen de cuando finaliza la carrera
+
+<img width="264" height="124" alt="{ADD64079-DB8D-414E-82F0-B1D2C88CF631}" src="https://github.com/user-attachments/assets/2512ce17-bc67-40e2-ad07-7408a5a1ea31" />
+
+-Imagen del podio
+
+<img width="386" height="293" alt="{1A3088C3-CC7B-4148-A297-8127324CD5C4}" src="https://github.com/user-attachments/assets/07eef1c2-0e88-41ca-b5bb-324879ca62de" />
 
 ---
 
