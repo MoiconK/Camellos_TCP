@@ -171,7 +171,7 @@ Camellos_TCP
 <img width="512" height="349" alt="image" src="https://github.com/user-attachments/assets/3c1c3138-c5ff-408b-9415-daa3d31b231d" />
 
 
--Imagen de cuando te sale una puntucaión de cuando tiras el dado:
+-Imagen de cuando te sale una puntución de cuando tiras el dado:
 
 <img width="260" height="110" alt="image" src="https://github.com/user-attachments/assets/cff12204-4153-487c-b7ad-ebb9bae76b60" />
 
