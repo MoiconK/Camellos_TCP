@@ -36,7 +36,7 @@ public class Cliente extends Thread {
     public void run() {
         try {
             // Conexión al servidor (en el localhost y puerto 5555)
-            socket = new Socket(InetAddress.getLocalHost(), 5555);
+            socket = new Socket("10.192.117.164", 5555);
             System.out.println("[" + nombre + "] Conectado al servidor en puerto local: " + socket.getLocalPort());
 
             in = new DataInputStream(socket.getInputStream());
