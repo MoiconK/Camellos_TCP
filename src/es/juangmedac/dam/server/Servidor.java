@@ -16,6 +16,8 @@ public class Servidor {
     private final int NUM_MAX_JINETES = 4;
     // Lista de sockets de los clientes conectados
     private ArrayList<Socket> socketsClientes;
+    // Lista de hilos de gestión
+    private ArrayList<GestionClientes> hilosClientes;
 
     // Datos de la carrera
     private int contadorPosicionFinal;   // Se usará para asignar posiciones finales (1º, 2º, …)
@@ -37,6 +39,7 @@ public class Servidor {
         finCarrera = false;
         nombresJinetes = "";
         turnoActual = 0; // El primer turno se asigna al camello 0.
+        hilosClientes = new ArrayList<>();
     }
 
     /**
@@ -48,7 +51,6 @@ public class Servidor {
         avances = new int[NUM_MAX_JINETES];
 
         socketsClientes = new ArrayList<>();
-        DataOutputStream[] outputs = new DataOutputStream[NUM_MAX_JINETES]; // Para enviar a todos
 
         System.out.println("Servidor iniciado en puerto 5555... Esperando " + NUM_MAX_JINETES + " clientes.");
 
@@ -74,27 +76,27 @@ public class Servidor {
                 out.writeUTF("aceptado");
                 out.flush();
 
-                // Se guarda el socket del cliente y su output stream
+                // Se guarda el socket del cliente
                 socketsClientes.add(socketCliente);
-                outputs[socketsClientes.size() - 1] = out;
             }
+
+            System.out.println("Todos los clientes conectados. Nombres: " + nombresJinetes);
+            System.out.println("Iniciando carrera...");
 
             // Se lanzan los hilos de gestión para cada cliente
             for (int i = 0; i < NUM_MAX_JINETES; i++) {
                 Socket s = socketsClientes.get(i);
                 GestionClientes hilo = new GestionClientes(this, s, i);
+                hilosClientes.add(hilo);
                 hilo.start();
             }
 
-            // Espera a que la carrera finalice
+            // Espera a que la carrera finalice (cuando todos los camellos hayan terminado)
             synchronized (this) {
                 while (!finCarrera) {
                     wait();
                 }
             }
-
-            // Pequeña pausa para asegurar que todos los hilos han terminado
-            Thread.sleep(2000);
 
             System.out.println("Carrera finalizada. Cerrando servidor.");
 
@@ -114,22 +116,38 @@ public class Servidor {
             return;
         }
 
+        System.out.println("=== TURNO DEL CAMELLO " + idCamello + " ===");
+        System.out.println("Camello " + idCamello + " lanza el dado y obtiene: " + avance);
+
         // Actualizamos el avance
         avances[idCamello] += avance;
         if (avances[idCamello] >= 100) {
             avances[idCamello] = 100;
             // Se asigna la posición final
             posicionesFinales[idCamello] = contadorPosicionFinal;
+            System.out.println("¡Camello " + idCamello + " HA TERMINADO en la posición " + contadorPosicionFinal + "!");
             contadorPosicionFinal++;
             numJinetesAcabados++;
-            System.out.println("Camello " + idCamello + " ha terminado en la posición " + posicionesFinales[idCamello]);
         } else {
             System.out.println("Camello " + idCamello + " avanza " + avance + " (Total: " + avances[idCamello] + ")");
         }
 
+        // Mostrar estado actual de todos los camellos
+        System.out.println("ESTADO ACTUAL:");
+        for (int i = 0; i < NUM_MAX_JINETES; i++) {
+            System.out.println("  Camello " + i + ": " + avances[i] + "/100");
+        }
+        System.out.println("Camellos terminados: " + numJinetesAcabados + "/" + NUM_MAX_JINETES);
+
         // Si todos han finalizado, se marca el fin de la carrera
         if (numJinetesAcabados == NUM_MAX_JINETES) {
-            notificarFinCarrera(); // Usar el nuevo método
+            finCarrera = true;
+            System.out.println("¡TODOS LOS CAMELLOS HAN TERMINADO!");
+            System.out.println("Posiciones finales:");
+            for (int i = 0; i < NUM_MAX_JINETES; i++) {
+                System.out.println("  Camello " + i + ": posición " + posicionesFinales[i]);
+            }
+            notifyAll();
         }
     }
 
@@ -137,19 +155,14 @@ public class Servidor {
      * Devuelve el array de avances actuales.
      */
     public synchronized int[] getAvances() {
-        return avances;
+        return avances.clone(); // Devolver copia para evitar problemas de concurrencia
     }
 
     /**
-     * Devuelve el array de posiciones finales. Si el camello aún no tiene asignada su posición,
-     * se le asigna en ese momento.
+     * Devuelve el array de posiciones finales.
      */
-    public synchronized int[] getPosicionesFinales(int idCamello) {
-        if (avances[idCamello] >= 100 && posicionesFinales[idCamello] == 0) {
-            posicionesFinales[idCamello] = contadorPosicionFinal;
-            contadorPosicionFinal++;
-        }
-        return posicionesFinales;
+    public synchronized int[] getPosicionesFinales() {
+        return posicionesFinales.clone(); // Devolver copia para evitar problemas de concurrencia
     }
 
     /**
@@ -180,22 +193,23 @@ public class Servidor {
      * Se utiliza un bucle para saltar a aquellos que ya han terminado.
      */
     public synchronized void siguienteTurno() {
+        int turnoAnterior = turnoActual;
+
+        if (finCarrera) {
+            return; // No cambiar turno si la carrera ya terminó
+        }
+
         do {
             turnoActual = (turnoActual + 1) % NUM_MAX_JINETES;
-        } while (avances[turnoActual] >= 100 && !finCarrera);
+            // Si hemos dado una vuelta completa y todos siguen activos, salimos para evitar bucle infinito
+            if (turnoActual == turnoAnterior) {
+                break;
+            }
+        } while (avances[turnoActual] >= 100);
+
+        System.out.println("Turno cambiado: " + turnoAnterior + " -> " + turnoActual);
+
         // Se notifica a todos los hilos que el turno ha cambiado.
         notifyAll();
-    }
-    // Notifica a todos los clientes que la carrera ha finalizado
-    public synchronized void notificarFinCarrera() {
-        finCarrera = true;
-        notifyAll(); // Despierta a todos los hilos que estén esperando
-
-        // Pequeña pausa para asegurar que todos los hilos reciben la notificación
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }
